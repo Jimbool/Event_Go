@@ -4,34 +4,27 @@ import (
 	"reflect"
 )
 
-// 定义事件参数类型的接口
-// 具体的事件需要用到的参数需要实现此接口
-// 并且注册到事件的方法需要使用此接口作为参数类型
-type EventParamType interface {
-	GetTypeName() string
-}
-
 // 定义事件对象
 // 任何具体的事件都是它的一个具体对象，通过调用New方法来创建
 type Event struct {
-	funcList []func(EventParamType)
+	funcList []func(IEventParamType)
 }
 
 func New() *Event {
 	return &Event{
-		funcList: make([]func(EventParamType), 0),
+		funcList: make([]func(IEventParamType), 0),
 	}
 }
 
 // 注册事件方法
 // f：待注册的事件方法
-func (listener *Event) Register(f func(EventParamType)) {
+func (listener *Event) Register(f func(IEventParamType)) {
 	listener.funcList = append(listener.funcList, f)
 }
 
 // 取消方法的注册
 // f：待取消注册的方法
-func (listener *Event) UnRegister(f func(EventParamType)) {
+func (listener *Event) UnRegister(f func(IEventParamType)) {
 	for index, value := range listener.funcList {
 		if reflect.ValueOf(value) == reflect.ValueOf(f) {
 			// 如果是最后一项，则单独处理
@@ -48,7 +41,7 @@ func (listener *Event) UnRegister(f func(EventParamType)) {
 
 // 同步触发事件
 // param：传递的参数
-func (listener *Event) Trigger(param EventParamType) {
+func (listener *Event) Trigger(param IEventParamType) {
 	for _, value := range listener.funcList {
 		value(param)
 	}
@@ -56,7 +49,7 @@ func (listener *Event) Trigger(param EventParamType) {
 
 // 异步触发事件
 // param：传递的参数
-func (listener *Event) TriggerAsync(param EventParamType) {
+func (listener *Event) TriggerAsync(param IEventParamType) {
 	for _, value := range listener.funcList {
 		go value(param)
 	}
