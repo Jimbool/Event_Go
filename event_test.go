@@ -2,6 +2,7 @@ package Event_Go
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -51,7 +52,61 @@ func init() {
 	LvUpEvent.Register(f3)
 }
 
-func Test(t *testing.T) {
+func TestRegister(t *testing.T) {
+	newEvent := New()
+	newEvent.Register(f1)
+	if len(newEvent.funcList) != 1 {
+		t.Logf("方法数量不正确，应该为1，现在为：%d\n", len(newEvent.funcList))
+	}
+	if reflect.ValueOf(newEvent.funcList[0]) != reflect.ValueOf(f1) {
+		t.Logf("Register方法不正确")
+	}
+
+	newEvent.Register(f2)
+	if len(newEvent.funcList) != 2 {
+		t.Logf("方法数量不正确，应该为2，现在为：%d\n", len(newEvent.funcList))
+	}
+	if reflect.ValueOf(newEvent.funcList[1]) != reflect.ValueOf(f2) {
+		t.Logf("Register方法不正确")
+	}
+
+	newEvent.Register(f3)
+	if len(newEvent.funcList) != 3 {
+		t.Logf("方法数量不正确，应该为3，现在为：%d\n", len(newEvent.funcList))
+	}
+	if reflect.ValueOf(newEvent.funcList[2]) != reflect.ValueOf(f3) {
+		t.Logf("Register方法不正确")
+	}
+}
+
+func TestUnRegister(t *testing.T) {
+	newEvent := New()
+	newEvent.Register(f1)
+	if len(newEvent.funcList) != 1 {
+		t.Logf("方法数量不正确，应该为1，现在为：%d\n", len(newEvent.funcList))
+	}
+	if reflect.ValueOf(newEvent.funcList[0]) != reflect.ValueOf(f1) {
+		t.Logf("Register方法不正确")
+	}
+
+	newEvent.Register(f2)
+	if len(newEvent.funcList) != 2 {
+		t.Logf("方法数量不正确，应该为2，现在为：%d\n", len(newEvent.funcList))
+	}
+	if reflect.ValueOf(newEvent.funcList[1]) != reflect.ValueOf(f2) {
+		t.Logf("Register方法不正确")
+	}
+
+	newEvent.UnRegister(f2)
+	if len(newEvent.funcList) != 1 {
+		t.Logf("方法数量不正确，应该为1，现在为：%d\n", len(newEvent.funcList))
+	}
+	if reflect.ValueOf(newEvent.funcList[0]) != reflect.ValueOf(f1) {
+		t.Logf("Register方法不正确")
+	}
+}
+
+func TestTrigger(t *testing.T) {
 	eventParam := NewEventParam("Jordan", 30)
 	LvUpEvent.Trigger(eventParam)
 	if f1Result != "f1:Name:Jordan,Age:30,paranName:EventParam" {
@@ -68,7 +123,7 @@ func Test(t *testing.T) {
 	t.Logf("f3Result:%s\n", f3Result)
 }
 
-func TestAsync(t *testing.T) {
+func TestTriggerAsync(t *testing.T) {
 	eventParam := NewEventParam("Jordan", 30)
 	LvUpEvent.TriggerAsync(eventParam)
 	time.Sleep(5 * time.Second)
