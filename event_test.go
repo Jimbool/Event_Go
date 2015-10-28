@@ -1,6 +1,7 @@
 package Event_Go
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -20,6 +21,14 @@ func NewEventParam(name string, count int) *EventParam {
 	}
 }
 
+func ConvertParam(param IEventParamType) *EventParam {
+	if param_new, ok := param.(*EventParam); ok {
+		return param_new
+	} else {
+		panic(errors.New("参数类型转换失败"))
+	}
+}
+
 var (
 	LvUpEvent = New()
 	f1Result  string
@@ -28,21 +37,18 @@ var (
 )
 
 func f1(param IEventParamType) {
-	if param_new, ok := param.(*EventParam); ok {
-		f1Result = fmt.Sprintf("f1:Name:%s,Age:%d,paranName:%s", param_new.Name, param_new.Age, param_new.GetTypeName())
-	}
+	param_new := ConvertParam(param)
+	f1Result = fmt.Sprintf("f1:Name:%s,Age:%d,paranName:%s", param_new.Name, param_new.Age, param_new.GetTypeName())
 }
 
 func f2(param IEventParamType) {
-	if param_new, ok := param.(*EventParam); ok {
-		f2Result = fmt.Sprintf("f2:Name:%s,Age:%d,paranName:%s", param_new.Name, param_new.Age, param_new.GetTypeName())
-	}
+	param_new := ConvertParam(param)
+	f2Result = fmt.Sprintf("f2:Name:%s,Age:%d,paranName:%s", param_new.Name, param_new.Age, param_new.GetTypeName())
 }
 
 func f3(param IEventParamType) {
-	if param_new, ok := param.(*EventParam); ok {
-		f3Result = fmt.Sprintf("f3:Name:%s,Age:%d,paranName:%s", param_new.Name, param_new.Age, param_new.GetTypeName())
-	}
+	param_new := ConvertParam(param)
+	f3Result = fmt.Sprintf("f3:Name:%s,Age:%d,paranName:%s", param_new.Name, param_new.Age, param_new.GetTypeName())
 }
 
 func init() {
